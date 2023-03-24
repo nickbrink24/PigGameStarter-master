@@ -7,6 +7,8 @@ import edu.up.cs301.game.infoMsg.GameState;
 
 import android.util.Log;
 
+import java.util.Random;
+
 // dummy comment, to see if commit and push work from srvegdahl account
 
 /**
@@ -17,11 +19,13 @@ import android.util.Log;
  */
 public class PigLocalGame extends LocalGame {
 
+    private PigGameState PGS;
+
     /**
      * This ctor creates a new game state
      */
     public PigLocalGame() {
-        //TODO  You will implement this constructor
+        PGS = new PigGameState();
     }
 
     /**
@@ -29,8 +33,7 @@ public class PigLocalGame extends LocalGame {
      */
     @Override
     protected boolean canMove(int playerIdx) {
-        //TODO  You will implement this method
-        return false;
+        return playerIdx == PGS.getTurnID();
     }
 
     /**
@@ -40,8 +43,43 @@ public class PigLocalGame extends LocalGame {
      */
     @Override
     protected boolean makeMove(GameAction action) {
-        //TODO  You will implement this method
-        return false;
+        if (action instanceof PigRollAction || action instanceof PigHoldAction) {
+
+            if (action instanceof PigHoldAction) {
+                if (PGS.getTurnID() == 0) {
+                    PGS.setPlayer0_score(PGS.getPlayer0_score() + PGS.getRunningTotal());
+                    if(playerNames.length == 2) {
+                        PGS.setTurnID(1);
+                    }
+                } else if (PGS.getTurnID() == 1) {
+                    PGS.setPlayer1_score(PGS.getPlayer1_score() + PGS.getRunningTotal());
+                    if(playerNames.length == 2) {
+                        PGS.setTurnID(0);
+                    }
+                }
+
+                PGS.setRunningTotal(0);
+                return true;
+            } else {
+                Random rand = new Random();
+                PGS.setDieValue(rand.nextInt(6) + 1);
+
+                if (PGS.getDieValue() != 1) {
+                    PGS.setRunningTotal(PGS.getRunningTotal() + PGS.getDieValue());
+                } else {
+                    PGS.setRunningTotal(0);
+                    if (PGS.getTurnID() == 0 && playerNames.length == 2) {
+                        PGS.setTurnID(1);
+                    } else if (PGS.getTurnID() == 1 && playerNames.length == 2){
+                        PGS.setTurnID(0);
+                    }
+                }
+
+                return true;
+            }
+        } else {
+            return false;
+        }
     }//makeMove
 
     /**
@@ -49,7 +87,8 @@ public class PigLocalGame extends LocalGame {
      */
     @Override
     protected void sendUpdatedStateTo(GamePlayer p) {
-        //TODO  You will implement this method
+        PigGameState copy = new PigGameState(PGS);
+        p.sendInfo(copy);
     }//sendUpdatedSate
 
     /**
@@ -61,7 +100,14 @@ public class PigLocalGame extends LocalGame {
      */
     @Override
     protected String checkIfGameOver() {
-        //TODO  You will implement this method
+        if(PGS.getPlayer0_score() >= 50) {
+            return "Congrats, " + playerNames[0] + ". You won with a score of" +
+                    PGS.getPlayer0_score();
+        } else if (PGS.getPlayer1_score() >= 50) {
+            return "Congrats, " + playerNames[1] + ". You won with a score of" +
+                    PGS.getPlayer1_score();
+        }
+
         return null;
     }
 

@@ -60,7 +60,35 @@ public class PigHumanPlayer extends GameHumanPlayer implements OnClickListener {
      */
     @Override
     public void receiveInfo(GameInfo info) {
-        //TODO You will implement this method to receive state objects from the game
+        if(!(info instanceof PigGameState)) {
+            flash(Color.RED, 50);
+            return;
+        }
+
+        if (playerNum == 0) {
+            playerScoreTextView.setText(Integer.toString(((PigGameState) info).getPlayer0_score()));
+            oppScoreTextView.setText(Integer.toString(((PigGameState) info).getPlayer1_score()));
+        } else if (playerNum == 1) {
+            playerScoreTextView.setText(Integer.toString(((PigGameState) info).getPlayer1_score()));
+            oppScoreTextView.setText(Integer.toString(((PigGameState) info).getPlayer0_score()));
+        }
+
+        turnTotalTextView.setText(Integer.toString(((PigGameState) info).getRunningTotal()));
+
+
+        if (((PigGameState) info).getDieValue() == 1) {
+            dieImageButton.setImageResource(R.drawable.face1);
+        } else if (((PigGameState) info).getDieValue() == 2) {
+            dieImageButton.setImageResource(R.drawable.face2);
+        } else if (((PigGameState) info).getDieValue() == 3) {
+            dieImageButton.setImageResource(R.drawable.face3);
+        } else if (((PigGameState) info).getDieValue() == 4) {
+            dieImageButton.setImageResource(R.drawable.face4);
+        } else if (((PigGameState) info).getDieValue() == 5) {
+            dieImageButton.setImageResource(R.drawable.face5);
+        } else if (((PigGameState) info).getDieValue() == 6) {
+            dieImageButton.setImageResource(R.drawable.face6);
+        }
     }//receiveInfo
 
     /**
@@ -71,7 +99,13 @@ public class PigHumanPlayer extends GameHumanPlayer implements OnClickListener {
      * 		the button that was clicked
      */
     public void onClick(View button) {
-        //TODO  You will implement this method to send appropriate action objects to the game
+        if (button instanceof ImageButton) {
+            game.sendAction(new PigRollAction(this));
+        } else if (button instanceof Button) {
+            game.sendAction(new PigHoldAction(this));
+        }
+
+
     }// onClick
 
     /**
