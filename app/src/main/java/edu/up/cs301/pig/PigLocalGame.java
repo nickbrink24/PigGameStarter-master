@@ -43,43 +43,46 @@ public class PigLocalGame extends LocalGame {
      */
     @Override
     protected boolean makeMove(GameAction action) {
-        if (action instanceof PigRollAction || action instanceof PigHoldAction) {
-
-            if (action instanceof PigHoldAction) {
-                if (PGS.getTurnID() == 0) {
-                    PGS.setPlayer0_score(PGS.getPlayer0_score() + PGS.getRunningTotal());
-                    if(playerNames.length == 2) {
-                        PGS.setTurnID(1);
-                    }
-                } else if (PGS.getTurnID() == 1) {
-                    PGS.setPlayer1_score(PGS.getPlayer1_score() + PGS.getRunningTotal());
-                    if(playerNames.length == 2) {
-                        PGS.setTurnID(0);
-                    }
+        if (action instanceof PigHoldAction) {
+            if (PGS.getTurnID() == 0) {
+                PGS.setAction(playerNames[0] + " has added " + PGS.getRunningTotal() +
+                              " to their score");
+                PGS.setPlayer0_score(PGS.getPlayer0_score() + PGS.getRunningTotal());
+                if(playerNames.length == 2) {
+                    PGS.setTurnID(1);
                 }
-
-                PGS.setRunningTotal(0);
-                return true;
-            } else {
-                Random rand = new Random();
-                PGS.setDieValue(rand.nextInt(6) + 1);
-
-                if (PGS.getDieValue() != 1) {
-                    PGS.setRunningTotal(PGS.getRunningTotal() + PGS.getDieValue());
-                } else {
-                    PGS.setRunningTotal(0);
-                    if (PGS.getTurnID() == 0 && playerNames.length == 2) {
-                        PGS.setTurnID(1);
-                    } else if (PGS.getTurnID() == 1 && playerNames.length == 2){
-                        PGS.setTurnID(0);
-                    }
+            } else if (PGS.getTurnID() == 1) {
+                PGS.setAction(playerNames[1] + " has added " + PGS.getRunningTotal() +
+                              " to their score");
+                PGS.setPlayer1_score(PGS.getPlayer1_score() + PGS.getRunningTotal());
+                if(playerNames.length == 2) {
+                    PGS.setTurnID(0);
                 }
-
-                return true;
             }
-        } else {
-            return false;
+
+            PGS.setRunningTotal(0);
+            return true;
+        } else if (action instanceof PigRollAction) {
+            Random rand = new Random();
+            PGS.setDieValue(rand.nextInt(6) + 1);
+            if (PGS.getDieValue() != 1) {
+                PGS.setAction(playerNames[PGS.getTurnID()] + " has rolled a " +
+                              PGS.getDieValue());
+                PGS.setRunningTotal(PGS.getRunningTotal() + PGS.getDieValue());
+            } else {
+                PGS.setAction(playerNames[PGS.getTurnID()] + " has rolled a 1. They" +
+                              " lose everything");
+                PGS.setRunningTotal(0);
+                if (PGS.getTurnID() == 0 && playerNames.length == 2) {
+                    PGS.setTurnID(1);
+                } else if (PGS.getTurnID() == 1 && playerNames.length == 2){
+                    PGS.setTurnID(0);
+                }
+            }
+            return true;
         }
+
+        return false;
     }//makeMove
 
     /**
@@ -101,10 +104,10 @@ public class PigLocalGame extends LocalGame {
     @Override
     protected String checkIfGameOver() {
         if(PGS.getPlayer0_score() >= 50) {
-            return "Congrats, " + playerNames[0] + ". You won with a score of" +
+            return "Congrats, " + playerNames[0] + ". You won with a score of " +
                     PGS.getPlayer0_score();
         } else if (PGS.getPlayer1_score() >= 50) {
-            return "Congrats, " + playerNames[1] + ". You won with a score of" +
+            return "Congrats, " + playerNames[1] + ". You won with a score of " +
                     PGS.getPlayer1_score();
         }
 

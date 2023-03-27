@@ -32,13 +32,14 @@ public class PigComputerPlayer extends GameComputerPlayer {
     protected void receiveInfo(GameInfo info) {
         PigGameState PGS = new PigGameState((PigGameState)info);
         if (PGS.getTurnID() != playerNum) {
-            //do nothing
+            return;
         } else {
+            sleep(2000);
             Random rand = new Random();
-            if (rand.nextInt(2) == 0) {
+            if (rand.nextInt(2) == 1) {
                 game.sendAction(new PigHoldAction(this));
             } else {
-                game.sendAction((new PigRollAction(this)));
+                game.sendAction(new PigRollAction(this));
             }
         }
     }//receiveInfo

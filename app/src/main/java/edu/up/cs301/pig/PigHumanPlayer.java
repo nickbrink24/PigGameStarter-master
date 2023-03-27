@@ -31,6 +31,8 @@ public class PigHumanPlayer extends GameHumanPlayer implements OnClickListener {
     private TextView    messageTextView     = null;
     private ImageButton dieImageButton      = null;
     private Button      holdButton          = null;
+    private TextView    player_0_view       = null;
+    private TextView    player_1_view       = null;
 
     // the android activity that we are running
     private GameMainActivity myActivity;
@@ -69,11 +71,20 @@ public class PigHumanPlayer extends GameHumanPlayer implements OnClickListener {
             playerScoreTextView.setText(Integer.toString(((PigGameState) info).getPlayer0_score()));
             oppScoreTextView.setText(Integer.toString(((PigGameState) info).getPlayer1_score()));
         } else if (playerNum == 1) {
-            playerScoreTextView.setText(Integer.toString(((PigGameState) info).getPlayer1_score()));
-            oppScoreTextView.setText(Integer.toString(((PigGameState) info).getPlayer0_score()));
+            playerScoreTextView.setText(Integer.toString(((PigGameState) info).getPlayer0_score()));
+            oppScoreTextView.setText(Integer.toString(((PigGameState) info).getPlayer1_score()));
+        }
+
+        if (((PigGameState) info).getTurnID() == 0) {
+            playerScoreTextView.setTextColor(Color.GREEN);
+            oppScoreTextView.setTextColor(Color.BLACK);
+        } else {
+            playerScoreTextView.setTextColor(Color.BLACK);
+            oppScoreTextView.setTextColor(Color.GREEN);
         }
 
         turnTotalTextView.setText(Integer.toString(((PigGameState) info).getRunningTotal()));
+        messageTextView.setText(((PigGameState) info).getAction());
 
 
         if (((PigGameState) info).getDieValue() == 1) {
@@ -130,11 +141,21 @@ public class PigHumanPlayer extends GameHumanPlayer implements OnClickListener {
         this.messageTextView     = (TextView)activity.findViewById(R.id.messageTextView);
         this.dieImageButton      = (ImageButton)activity.findViewById(R.id.dieButton);
         this.holdButton          = (Button)activity.findViewById(R.id.holdButton);
+        this.player_0_view       = (TextView)activity.findViewById(R.id.yourScoreText);
+        this.player_1_view       = (TextView)activity.findViewById(R.id.oppScoreText);
 
         //Listen for button presses
         dieImageButton.setOnClickListener(this);
         holdButton.setOnClickListener(this);
 
     }//setAsGui
+
+    @Override
+    protected void initAfterReady() {
+        player_0_view.setText(allPlayerNames[0] + "'s Score: ");
+        if (allPlayerNames.length == 2)  {
+            player_1_view.setText(allPlayerNames[1] + "'s Score: ");
+        }
+    }
 
 }// class PigHumanPlayer
